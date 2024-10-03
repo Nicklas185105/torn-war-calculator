@@ -10,10 +10,10 @@ export default async function Home() {
 
 	return (
 		<div>
-			<p>Api Key: {session.user.api_key}</p>
+			{/* <p>Api Key: {session.user.api_key}</p>
 			<p>Faction Id: {session.user.faction_id}</p>
 			<p>ID: {session.user.id}</p>
-			<p>Role: {session.user.role}</p>
+			<p>Role: {session.user.role}</p> */}
 		</div>
 	);
 }

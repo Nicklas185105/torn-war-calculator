@@ -10,7 +10,6 @@ import { ApiResponse } from '../../types';
 import { RankedWar } from '../../types/wars';
 import { fetchWars } from '../../utils/api';
 import { getSession } from 'next-auth/react';
-// import { authOptions } from './api/auth/[...nextauth]/route';
 
 export default function Home() {
 	const session = getSession();
@@ -120,7 +119,7 @@ export default function Home() {
 		return warReport;
 	};
 
-	// fetchWarReportt(2654, 'YOUR_API_KEY')
+	// fetchWarReport(2654, 'YOUR_API_KEY')
 	// 	.then((report) => console.log(report))
 	// 	.catch((error) => console.error('Error fetching war report:', error));
 
@@ -132,7 +131,7 @@ export default function Home() {
 				handleFetchData={handleFetchData}
 			/>
 			{apiKey && <button onClick={clearApiKey}>Clear API Key</button>}
-			{/* Run the fetchWarReportt function and print the result on a button click */}
+			{/* Run the fetchWarReport function and print the result on a button click */}
 			<button onClick={() => fetchWarReport(2654, apiKey)} disabled={!apiKey}>
 				Fetch War Report
 			</button>
