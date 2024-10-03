@@ -15,16 +15,16 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({
 	handleFetchData,
 }) => {
 	useEffect(() => {
-		const savedApiKey = localStorage.getItem('apiKey');
-		if (savedApiKey) {
-			setApiKey(savedApiKey);
-		}
+		// const savedApiKey = localStorage.getItem('apiKey');
+		// if (savedApiKey) {
+		// 	setApiKey(savedApiKey);
+		// }
 	}, [setApiKey]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newApiKey = e.target.value;
 		setApiKey(newApiKey);
-		localStorage.setItem('apiKey', newApiKey); // Save the API key to localStorage
+		// localStorage.setItem('apiKey', newApiKey); // Save the API key to localStorage
 	};
 
 	return (

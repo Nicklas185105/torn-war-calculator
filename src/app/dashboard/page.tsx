@@ -19,7 +19,7 @@ export default function Home() {
 	}
 
 	const [apiKey, setApiKey] = useState<string>(() => {
-		return localStorage.getItem('apiKey') || '';
+		return /*localStorage.getItem('apiKey') ||*/ '';
 	});
 	const [wars, setWars] = useState<Record<number, RankedWar>>();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -39,7 +39,7 @@ export default function Home() {
 	}, [apiKey]);
 
 	const clearApiKey = () => {
-		localStorage.removeItem('apiKey');
+		// localStorage.removeItem('apiKey');
 		setApiKey('');
 	};
 

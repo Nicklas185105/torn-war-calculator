@@ -24,7 +24,7 @@ export default function GenerateWarReport() {
 		null
 	);
 
-	const savedApiKey = localStorage.getItem('apiKey') ?? '';
+	const savedApiKey = /*localStorage.getItem('apiKey') ??*/ '';
 
 	const handleFetchWarIds = useCallback(async () => {
 		setLoading(true);
