@@ -1,5 +1,21 @@
 # Torn Faction War Overview
 
+## Supabase
+
+Generate types from supabase with the following:
+
+```bash
+npx supabase gen types typescript --project-id <id> > database.types.ts
+```
+
+## Localtunnel for Clerk
+
+To start a new localtunnel so we can use the webhooks locally:
+
+```bash
+lt --port 3000 --subdomain long-suns-laugh
+```
+
 ## Project Goal
 
 This project aims to provide Torn factions with a comprehensive and user-friendly web application to get a quick overview of their ranked war status. The application fetches and displays detailed war reports, including faction scores, member contributions, and other relevant statistics, allowing faction members to analyze their performance and strategize accordingly.

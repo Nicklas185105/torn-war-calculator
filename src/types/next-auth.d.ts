@@ -7,6 +7,7 @@ declare module 'next-auth' {
 		role: string;
 		faction_id: string;
 		api_key: string;
+		name: string;
 	}
 
 	interface Session {
@@ -15,7 +16,9 @@ declare module 'next-auth' {
 			role: string;
 			faction_id: string;
 			api_key: string;
+			name: string;
 		};
+		supabaseAccessToken: string;
 	}
 
 	interface JWT {
@@ -23,5 +26,7 @@ declare module 'next-auth' {
 		role: string;
 		faction_id: string;
 		api_key: string;
+		name: string;
+		supabaseAccessToken: string;
 	}
 }

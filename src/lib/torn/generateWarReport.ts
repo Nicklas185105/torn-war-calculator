@@ -1,15 +1,17 @@
-import { Attack } from '../types/attacks';
-import { WRMember, Reward, WarReport } from '../types/warReport';
-import { fetchAttacks, fetchUserProfile, fetchWarReport } from './api';
-import { Member } from '../types';
+import { Reward, WarReport, WRMember } from '@/types/warReport';
+import TornClient from './client';
+import { Attack } from '@/types/attacks';
+import { Member } from '@/types';
 
 export const generateWarReport = async (
+	userId: string,
 	apiKey: string,
 	warId: number
 ): Promise<WarReport> => {
 	try {
-		const callingUserData = await fetchUserProfile(apiKey);
-		const report = await fetchWarReport(warId, apiKey);
+		const tornClient = new TornClient(apiKey);
+		const callingUserData = await tornClient.getUserData(userId);
+		const report = await tornClient.getRankedWarReport(warId.toString());
 
 		const factions = report.rankedwarreport.factions;
 		const ownFactionId = callingUserData.faction.faction_id;
@@ -46,22 +48,32 @@ export const generateWarReport = async (
 		let attacks: Attack[] = [];
 		const to = report.rankedwarreport.war.end;
 		let from = report.rankedwarreport.war.start;
-		console.log('from', from, 'to', to);
 		while (true) {
-			const attackDetails = await fetchAttacks(apiKey, from, to);
+			const attackDetails = await tornClient.getAttacks(
+				ownFactionId.toString(),
+				from.toString(),
+				to.toString()
+			);
+			// console.log('from', from.toString(), 'to', to.toString());
 			attacks = attacks.concat(Object.values(attackDetails.attacks));
-			if (Object.values(attackDetails.attacks).length < 100) break;
+			if (Object.values(attackDetails.attacks).length < 50) break;
 			// If we have 100 attacks, there might be more, so we need to fetch more
-			from = attacks[attacks.length - 1].timestamp_ended + 1;
+			from = attacks[attacks.length - 1].timestamp_started; // + 1
 		}
 
-		console.log(
-			'attacks',
-			attacks.filter(
-				(attack) =>
-					attack.ranked_war === 0 && attack.attacker_faction === ownFactionId
-			)
+		// only save all the unique attacks
+		attacks = attacks.filter(
+			(attack, index, self) =>
+				index === self.findIndex((t) => t.code === attack.code)
 		);
+
+		// console.log(
+		// 	'attacks',
+		// 	attacks.filter(
+		// 		(attack) =>
+		// 			attack.ranked_war === 0 && attack.attacker_faction === ownFactionId
+		// 	)
+		// );
 
 		// Aggregate all the data into your war report structure
 		const warReport: WarReport = {
@@ -80,7 +92,12 @@ export const generateWarReport = async (
 				new Date(report.rankedwarreport.war.end * 1000).getTime() / 1000,
 			factionRewardTotal: 0,
 			factionTakeaway: 20,
-			expenses: [],
+			expenseStatSpies: 0,
+			expenseRevives: 0,
+			expenseBountyMerc: 0,
+			expenseChainWatcher: 0,
+			expenseXanax: 0,
+			expensesTotal: 0,
 			netRewardForPayout: 0,
 			rewards: rewards,
 			totalWarHits: calculateTotalHits(attacks, ownFactionId, 1),
@@ -88,6 +105,11 @@ export const generateWarReport = async (
 			weightedScoreFormula:
 				'(2 x War Hits  x Fair Fight Average ) + Assists + Retals + (0.5 x Non-War Hits) + (0.5 x Loss)',
 			payoutPerPoint: 0,
+			totalPayout: 0,
+			totalWeightedScore: 0,
+			totalWarlord: 0,
+			totalRespect: 0,
+			totalChainBonus: 0,
 			warId: report.rankedwarreport.war.id,
 			members: members.map(
 				([memberId, member]: [string, Member]) =>
@@ -96,8 +118,11 @@ export const generateWarReport = async (
 						name: member.name,
 						id: parseInt(memberId, 10),
 						totalPayout: 0,
-						weightedScore: 0,
-						warlord: 0,
+						weightedScore: calculateWeightedScoreFormulaA(attacks, memberId),
+						warlord: calculateWarlord(attacks, memberId),
+						hits: attacks.filter(
+							(attack) => attack.attacker_id === parseInt(memberId, 10)
+						),
 						warHits: calculateHits(attacks, memberId, 1),
 						nonWarHits: calculateHits(attacks, memberId, 0),
 						respect: parseFloat(
@@ -157,6 +182,34 @@ export const generateWarReport = async (
 			),
 		};
 
+		// calculate the total payout, total weighted score, total warlord, total respect, and total chain bonus
+		// warReport.totalPayout = warReport.members.reduce(
+		// 	(sum, member) => sum + member.totalPayout,
+		// 	0
+		// );
+		warReport.totalWeightedScore = warReport.members.reduce(
+			(sum, member) => sum + member.weightedScore,
+			0
+		);
+		warReport.totalWarlord = warReport.members.reduce(
+			(sum, member) => sum + member.warlord,
+			0
+		);
+		warReport.totalRespect = warReport.members.reduce(
+			(sum, member) => sum + member.respect,
+			0
+		);
+		warReport.totalChainBonus = warReport.members.reduce(
+			(sum, member) => sum + member.chainBonus,
+			0
+		);
+		// warReport.payoutPerPoint =
+		// 	warReport.netRewardForPayout / warReport.totalWeightedScore;
+
+		// console.log(
+		// 	'warReport',
+		// 	warReport.members.filter((member) => member.id === 2540367)[0].hits[0]
+		// );
 		return warReport;
 	} catch (error) {
 		console.error('Error generating war report:', error);
@@ -175,7 +228,8 @@ const calculateTotalHits = (
 			attack.ranked_war === warHit &&
 			(attack.result === 'Attacked' ||
 				attack.result === 'Mugged' ||
-				attack.result === 'Hospitalized')
+				attack.result === 'Hospitalized' ||
+				attack.result === 'Special')
 	).length;
 };
 
@@ -190,7 +244,8 @@ const calculateHits = (
 			attack.ranked_war === warHit &&
 			(attack.result === 'Attacked' ||
 				attack.result === 'Mugged' ||
-				attack.result === 'Hospitalized')
+				attack.result === 'Hospitalized' ||
+				attack.result === 'Special')
 	).length;
 };
 
@@ -203,7 +258,8 @@ const calculateFairFightAverage = (
 			attack.attacker_id === parseInt(memberId, 10) &&
 			(attack.result === 'Attacked' ||
 				attack.result === 'Mugged' ||
-				attack.result === 'Hospitalized')
+				attack.result === 'Hospitalized' ||
+				attack.result === 'Special')
 	);
 
 	const fairFightSum = filteredAttacks.reduce(
@@ -211,9 +267,7 @@ const calculateFairFightAverage = (
 		0
 	);
 
-	return filteredAttacks.length > 0
-		? parseFloat((fairFightSum / filteredAttacks.length).toFixed(2))
-		: 0;
+	return filteredAttacks.length > 0 ? fairFightSum / filteredAttacks.length : 0;
 };
 
 const calculateTotalAttackType = (
@@ -226,6 +280,31 @@ const calculateTotalAttackType = (
 			attack.attacker_id === parseInt(memberId, 10) &&
 			attack.result === attackType
 	).length;
+};
+
+const calculateWeightedScoreFormulaA = (
+	attacks: Attack[],
+	memberId: string
+): number => {
+	const warHits =
+		2 *
+		calculateHits(attacks, memberId, 1) *
+		calculateFairFightAverage(attacks, memberId);
+	const assists = calculateTotalAttackType(attacks, memberId, 'Assist');
+	const retals = attacks.filter(
+		(attack) =>
+			attack.attacker_id === parseInt(memberId, 10) &&
+			attack.modifiers.retaliation > 1
+	).length;
+	const nonWarHits = 0.5 * calculateHits(attacks, memberId, 0);
+	const loss = 0.5 * calculateTotalAttackType(attacks, memberId, 'Lost');
+	return warHits + assists + retals + nonWarHits + loss;
+};
+
+const calculateWarlord = (attacks: Attack[], memberId: string): number => {
+	const warHits = calculateHits(attacks, memberId, 1);
+	const nonWarHits = 0.5 * calculateHits(attacks, memberId, 0);
+	return warHits + nonWarHits;
 };
 
 // enum attackResults {

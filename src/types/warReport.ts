@@ -1,3 +1,5 @@
+import { Attack } from './attacks';
+
 export interface WarReport {
 	factionName: string;
 	factionScore: number;
@@ -9,13 +11,23 @@ export interface WarReport {
 	totalTime: number;
 	factionRewardTotal: number;
 	factionTakeaway: number;
-	expenses: Expense[];
+	expenseStatSpies: number;
+	expenseRevives: number;
+	expenseBountyMerc: number;
+	expenseChainWatcher: number;
+	expenseXanax: number;
+	expensesTotal: number;
 	netRewardForPayout: number;
 	rewards: Reward[];
 	totalWarHits: number;
 	totalNonWarHits: number;
 	weightedScoreFormula: string;
 	payoutPerPoint: number;
+	totalPayout: number;
+	totalWeightedScore: number;
+	totalWarlord: number;
+	totalRespect: number;
+	totalChainBonus: number;
 	warId: number;
 	members: WRMember[];
 }
@@ -39,6 +51,7 @@ export interface WRMember {
 	totalPayout: number;
 	weightedScore: number;
 	warlord: number;
+	hits: Attack[];
 	warHits: number;
 	nonWarHits: number;
 	respect: number;

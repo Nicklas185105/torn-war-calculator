@@ -1,148 +1,71 @@
-'use client';
+import { Box, Heading, Flex } from '@chakra-ui/react';
+import { UserInfo, FactionInfo, WarUpdates } from '@/components';
+import { RedirectToSignIn, SignedIn } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
+import { createClient } from '@/lib/supabase/server';
+import axios from 'axios';
+import { UserProfileResponse } from '@/types/profile';
 
-import { useState, useCallback, useEffect } from 'react';
-import styles from './Dashboard.module.css';
-import { redirect } from 'next/navigation';
-import ApiKeyInput from '../../components/ApiKeyInput';
-import WarList from '../../components/WarList';
-import WarSummary from '../../components/WarSummary';
-import { ApiResponse } from '../../types';
-import { RankedWar } from '../../types/wars';
-import { fetchWars } from '../../utils/api';
-import { getSession } from 'next-auth/react';
+interface PageProps {
+	searchParams: {
+		[key: string]: string | string[] | undefined;
+	};
+}
 
-export default function Home() {
-	const session = getSession();
+export default async function Home({ searchParams }: PageProps) {
+	const { tornId, key } = searchParams;
 
-	if (!session) {
-		redirect('/auth/signin');
+	const { userId } = await auth();
+
+	if (!userId) return <RedirectToSignIn />;
+
+	const supabase = await createClient();
+
+	const { error } = await supabase!
+		.from('user_profiles')
+		.select('*')
+		.eq('clerk_id', userId)
+		.single();
+	if (error) {
+		const response = await axios.get(
+			`https://api.torn.com/user/${tornId}?key=${key}`
+		);
+
+		if (response.data.error) {
+			// console.log(response.data.error);
+			// throw new Error(response.data.error.error);
+		}
+
+		const userData = response.data as UserProfileResponse;
+
+		// Create the user profile in Supabase
+		const { error } = await supabase.from('user_profiles').insert({
+			clerk_id: userId,
+			torn_user_id: userData.player_id.toString(),
+			faction_id: userData.faction.faction_id.toString(),
+			role: 'member',
+			// Add other fields as necessary
+		});
+		if (error) {
+			console.error('Error creating user profile:', error);
+		}
 	}
 
-	const [apiKey, setApiKey] = useState<string>(() => {
-		return /*localStorage.getItem('apiKey') ||*/ '';
-	});
-	const [wars, setWars] = useState<Record<number, RankedWar>>();
-	const [loading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState<string | null>(null);
-
-	const handleFetchData = useCallback(async () => {
-		setLoading(true);
-		setError(null);
-		try {
-			const data = await fetchWars(apiKey);
-			setWars(data.rankedwars);
-		} catch (Error: unknown) {
-			setError((Error as Error).message);
-		} finally {
-			setLoading(false);
-		}
-	}, [apiKey]);
-
-	const clearApiKey = () => {
-		// localStorage.removeItem('apiKey');
-		setApiKey('');
-	};
-
-	useEffect(() => {
-		if (apiKey) {
-			handleFetchData(); // Automatically fetch data if an API key is found
-		}
-	}, [apiKey, handleFetchData]);
-
-	const fetchWarReport = async (warID: number, apiKey: string) => {
-		const response = await fetch(
-			`https://api.torn.com/torn/${warID}?selections=rankedwarreport&key=${apiKey}`
-		);
-		const warData = (await response.json()) as ApiResponse;
-
-		const factions = warData.rankedwarreport.factions;
-
-		// Prepare an array to store each faction's details
-		const factionDetails = [];
-
-		// Iterate over the factions object
-		for (const [factionId, factionData] of Object.entries(factions)) {
-			const members = factionData.members;
-			const memberDetails = [];
-
-			// Iterate over the members object
-			for (const [memberId, memberData] of Object.entries(members)) {
-				// Add the member details to the memberDetails array
-				memberDetails.push({
-					memberId,
-					...memberData,
-				});
-			}
-
-			// Add the faction and its members to the factionDetails array
-			factionDetails.push({
-				factionId,
-				...factionData,
-				members: memberDetails,
-			});
-		}
-
-		console.log(factionDetails);
-
-		const factionAResponse = await fetch(
-			`https://api.torn.com/faction/${factionDetails[0].factionId}?selections=basic,chains,attacksfull&key=${apiKey}`
-		);
-		const factionAData = await factionAResponse.json();
-
-		const factionBResponse = await fetch(
-			`https://api.torn.com/faction/${factionDetails[1].factionId}?selections=basic,chains,attacksfull&key=${apiKey}`
-		);
-		const factionBData = await factionBResponse.json();
-
-		// Example: Fetch member data (loop over all members involved in the war)
-		const memberData = [];
-		for (const memberID of factionDetails[0].members.concat(
-			factionDetails[1].members
-		)) {
-			const memberResponse = await fetch(
-				`https://api.torn.com/user/${memberID}?selections=basic,attacks&key=${apiKey}`
-			);
-			const memberDetails = await memberResponse.json();
-			memberData.push(memberDetails);
-		}
-
-		// Aggregate all the data into your war report structure
-		const warReport = {
-			warDetails: warData.rankedwarreport,
-			factionA: factionAData,
-			factionB: factionBData,
-			members: memberData,
-		};
-
-		console.log(warReport);
-
-		return warReport;
-	};
-
-	// fetchWarReport(2654, 'YOUR_API_KEY')
-	// 	.then((report) => console.log(report))
-	// 	.catch((error) => console.error('Error fetching war report:', error));
-
 	return (
-		<div className={styles.dashboard}>
-			<ApiKeyInput
-				apiKey={apiKey}
-				setApiKey={setApiKey}
-				handleFetchData={handleFetchData}
-			/>
-			{apiKey && <button onClick={clearApiKey}>Clear API Key</button>}
-			{/* Run the fetchWarReport function and print the result on a button click */}
-			<button onClick={() => fetchWarReport(2654, apiKey)} disabled={!apiKey}>
-				Fetch War Report
-			</button>
-			{loading && <div>Fetching...</div>}
-			{error && <div>Error: {error}</div>}
-			{wars && (
-				<>
-					<WarSummary wars={wars} />
-					<WarList wars={wars} apiKey={apiKey} />
-				</>
-			)}
-		</div>
+		<Box p={6}>
+			<Heading mb={4}>Dashboard</Heading>
+			<Flex direction="column" gap={6}>
+				<SignedIn>
+					{/* User Information */}
+					<UserInfo />
+
+					{/* Faction Information */}
+					<FactionInfo />
+
+					{/* War Updates */}
+					<WarUpdates />
+				</SignedIn>
+			</Flex>
+		</Box>
 	);
 }
