@@ -3,14 +3,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { RankedWarReport } from '../types';
 import styles from './WarDetails.module.css';
-import { fetchWarReport } from '../utils/api';
 
 interface WarDetailsProps {
 	warId: number;
 	apiKey: string;
 }
 
-const WarDetails: React.FC<WarDetailsProps> = ({ warId, apiKey }) => {
+const WarDetails: React.FC<WarDetailsProps> = () => {
 	const [warReport, setWarReport] = useState<RankedWarReport | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
@@ -19,14 +18,15 @@ const WarDetails: React.FC<WarDetailsProps> = ({ warId, apiKey }) => {
 		setLoading(true);
 		setError(null);
 		try {
-			const data = await fetchWarReport(warId, apiKey);
-			setWarReport(data.rankedwarreport);
+			// const data = await fetchWarReport(warId, apiKey);
+			// setWarReport(data.rankedwarreport);
+			setWarReport(null);
 		} catch (Error: unknown) {
 			setError((Error as Error).message);
 		} finally {
 			setLoading(false);
 		}
-	}, [warId, apiKey]);
+	}, []);
 
 	useEffect(() => {
 		handleFetchData();
