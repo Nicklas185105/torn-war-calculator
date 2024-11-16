@@ -1,7 +1,7 @@
-import { Reward, WarReport, WRMember } from '@/types/warReport';
+import { Reward, WarReport, WRMember } from '@ctypes/warReport';
 import TornClient from './client';
-import { Attack } from '@/types/attacks';
-import { Member } from '@/types';
+import { Attack } from '@ctypes/attacks';
+import { Member } from '@ctypes/index';
 
 export const generateWarReport = async (
 	userId: string,

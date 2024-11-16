@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Field } from '@/components/ui/field';
-import { PasswordInput } from '@/components/ui/password-input';
+import { Button } from '@ui/button';
+import { Checkbox } from '@ui/checkbox';
+import { Field } from '@ui/field';
+import { PasswordInput } from '@ui/password-input';
 import {
 	Box,
 	Container,

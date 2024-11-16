@@ -1,7 +1,7 @@
 // components/UserInfo.tsx
 
-import { createClient } from '@/lib/supabase/server';
-import { TablesInsert } from '@/types/database.types';
+import { createClient } from '@lib/supabase/server';
+import { TablesInsert } from '@ctypes/database.types';
 import { Text, Heading, Spinner, Card } from '@chakra-ui/react';
 import { RedirectToSignIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';

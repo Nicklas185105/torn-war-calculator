@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // tornClient.ts
 
-import { ApiResponse } from '@/types';
-import { UserProfileResponse } from '@/types/profile';
+import { ApiResponse } from '@ctypes/index';
+import { UserProfileResponse } from '@ctypes/profile';
 import axios, { AxiosInstance } from 'axios';
 
 class TornClient {

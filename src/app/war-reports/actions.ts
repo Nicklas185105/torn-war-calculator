@@ -1,10 +1,10 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@/lib/supabase/server';
-import { TablesInsert } from '@/types/database.types';
-import TornClient from '@/lib/torn/client';
-import { generateWarReport } from '@/lib/torn/generateWarReport';
+import { createClient } from '@lib/supabase/server';
+import type { TablesInsert } from '@ctypes/database.types';
+import TornClient from '@lib/torn/client';
+import { generateWarReport } from '@lib/torn/generateWarReport';
 
 export async function getWarIds() {
 	const { userId } = await auth();

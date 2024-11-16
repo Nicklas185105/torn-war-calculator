@@ -3,8 +3,8 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@/lib/supabase/server';
-import TornClient from '@/lib/torn/client';
+import { createClient } from '@lib/supabase/server';
+import TornClient from '@lib/torn/client';
 
 export async function handleSubmit(formData: FormData) {
 	const { userId } = await auth();

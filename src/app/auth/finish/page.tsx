@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Field } from '@/components/ui/field';
 import {
 	Box,
 	Center,
@@ -15,6 +13,8 @@ import {
 import { handleSubmit } from './actions';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Button } from '@ui/button';
+import { Field } from '@ui/field';
 
 export default function FinishPage() {
 	const router = useRouter();

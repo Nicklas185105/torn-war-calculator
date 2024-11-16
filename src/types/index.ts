@@ -1,4 +1,6 @@
-import { RankedWar } from './wars';
+import type { RankedWar } from './wars';
+
+export { RankedWar };
 
 export interface Member {
 	name: string;

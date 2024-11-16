@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { generateReport, getWarIds } from './actions';
-import { WarReport } from '@/types/warReport';
 import {
 	Box,
 	Card,
@@ -25,6 +24,8 @@ import {
 	SelectValueText,
 } from '@ui/select';
 import { Button } from '@ui/button';
+import { WarReport } from '@ctypes/warReport';
+// import { WarReport } from '../../types/warReport';
 
 export default function GenerateWarReport() {
 	const [warId, setWarId] = useState<string[]>([]);
