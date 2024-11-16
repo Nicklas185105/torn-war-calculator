@@ -1,5 +1,10 @@
 // Generated War Report Types
 
+export interface GeneratedResponse {
+	factionId: string;
+	report: WarReport;
+}
+
 export interface WarReport {
 	factionName: string;
 	factionScore: number;

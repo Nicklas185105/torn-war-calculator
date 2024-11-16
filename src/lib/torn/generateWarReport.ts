@@ -1,12 +1,17 @@
 import TornClient from './client';
 import type { Attack, Member } from '@ctypes/torn.types';
-import type { Reward, WarReport, WRMember } from '@ctypes/warReport';
+import type {
+	GeneratedResponse,
+	Reward,
+	WarReport,
+	WRMember,
+} from '@ctypes/warReport';
 
 export const generateWarReport = async (
 	userId: string,
 	apiKey: string,
 	warId: number
-): Promise<WarReport> => {
+): Promise<GeneratedResponse> => {
 	try {
 		const tornClient = new TornClient(apiKey);
 		const callingUserData = await tornClient.getUserData(userId);
@@ -90,7 +95,7 @@ export const generateWarReport = async (
 				new Date(report.rankedwarreport.war.start * 1000).getTime() -
 				new Date(report.rankedwarreport.war.end * 1000).getTime() / 1000,
 			factionRewardTotal: 0,
-			factionTakeaway: 20,
+			factionTakeaway: 0,
 			expenseStatSpies: 0,
 			expenseRevives: 0,
 			expenseBountyMerc: 0,
@@ -206,7 +211,14 @@ export const generateWarReport = async (
 		// 	'warReport',
 		// 	warReport.members.filter((member) => member.id === 2540367)[0].hits[0]
 		// );
-		return warReport;
+
+		// return {
+		// 	[ownFactionId.toString()]: warReport,
+		// };
+		return {
+			factionId: ownFactionId.toString(),
+			report: warReport,
+		};
 	} catch (error) {
 		console.error('Error generating war report:', error);
 		throw error;

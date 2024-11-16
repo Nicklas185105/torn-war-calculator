@@ -24,11 +24,12 @@ import {
 } from '@ui/select';
 import { Button } from '@ui/button';
 import { WarReport } from '@ctypes/warReport';
-import { generateReport, getWarIds } from '@utils/war-reports';
+import { generateReport, getWarIds, saveReport } from '@utils/war-reports';
 
 export default function GenerateWarReport() {
 	const [warId, setWarId] = useState<string[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [factionId, setFactionId] = useState<string | null>(null);
 	const [warIds, setWarIds] = useState<ListCollection>(
 		createListCollection({ items: [] })
 	);
@@ -69,7 +70,9 @@ export default function GenerateWarReport() {
 		setLoading(true);
 		try {
 			console.log('warId:', warId);
-			setGeneratedReport(await generateReport(parseInt(warId[0], 10)));
+			const { factionId, report } = await generateReport(parseInt(warId[0]));
+			setGeneratedReport(report);
+			setFactionId(factionId);
 		} catch (Error: unknown) {
 			console.log('handleGenerateReport:', Error);
 		} finally {
@@ -105,6 +108,17 @@ export default function GenerateWarReport() {
 		);
 
 		setGeneratedReport({ ...generatedReport });
+		setLoading(false);
+	};
+
+	const handleSaveReport = () => {
+		if (!generatedReport) return;
+		setLoading(true);
+
+		saveReport(warId[0], factionId!, generatedReport).then(() => {
+			console.log('Report saved');
+		});
+
 		setLoading(false);
 	};
 
@@ -348,13 +362,22 @@ export default function GenerateWarReport() {
 							</Card.Root>
 						</Grid>
 					</Grid>
-					<Button
-						variant={'subtle'}
-						onClick={handleUpdatePayout}
-						disabled={loading}
-					>
-						Update Payout
-					</Button>
+					<Grid templateColumns="repeat(2, 1fr)" gap="6">
+						<Button
+							variant={'subtle'}
+							onClick={handleUpdatePayout}
+							loading={loading}
+						>
+							Update Payout
+						</Button>
+						<Button
+							variant={'subtle'}
+							onClick={handleSaveReport}
+							loading={loading}
+						>
+							Save Report
+						</Button>
+					</Grid>
 					<div>
 						{/* Table showcasing all the members from the users clan */}
 						<Table.ScrollArea borderWidth="1px" rounded="md" height="500px">
