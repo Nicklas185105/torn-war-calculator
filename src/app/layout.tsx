@@ -29,10 +29,16 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${geistSans.variable} ${geistMono.variable}`}>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable}`}
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+				}}
+			>
 				<Providers>
 					<NavBar />
-					<main>
+					<main style={{ flex: '1' }}>
 						{children}
 						{/* <SignedOut>
 							<RedirectToSignIn />

@@ -1,16 +1,20 @@
 'use client';
 
-import classNames from 'classnames';
 import { useState, useCallback, useEffect } from 'react';
-import styles from './WarReport.module.css';
 import { generateReport, getWarIds } from './actions';
 import { WarReport } from '@/types/warReport';
 import {
-	Button,
+	Box,
+	Card,
+	Container,
 	createListCollection,
+	Grid,
+	Heading,
 	Input,
 	ListCollection,
 	Table,
+	Text,
+	VStack,
 } from '@chakra-ui/react';
 import {
 	SelectContent,
@@ -19,7 +23,8 @@ import {
 	SelectRoot,
 	SelectTrigger,
 	SelectValueText,
-} from '@/components/ui/select';
+} from '@ui/select';
+import { Button } from '@ui/button';
 
 export default function GenerateWarReport() {
 	const [warId, setWarId] = useState<string[]>([]);
@@ -104,56 +109,58 @@ export default function GenerateWarReport() {
 	};
 
 	return (
-		<div className={styles.page}>
-			<h2>Generate War Report</h2>
-			{/* <select
-				value={warId}
-				onChange={(e) => setWarId(parseInt(e.target.value, 10))}
-			>
-				<option value="" disabled>
-					Select War ID
-				</option>
-				{warIds.map((id) => (
-					<option key={id} value={id}>
-						War ID {id}
-					</option>
-				))}
-			</select> */}
-			<SelectRoot
-				collection={warIds}
-				value={warId}
-				onValueChange={(e) => setWarId(e.value)}
-			>
-				<SelectLabel>Select War</SelectLabel>
-				<SelectTrigger>
-					<SelectValueText placeholder="Select War ID" />
-				</SelectTrigger>
-				<SelectContent>
-					{warIds.items.map((movie) => (
-						<SelectItem item={movie} key={movie.value}>
-							{movie.label}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</SelectRoot>
-			<Button onClick={handleGenerateReport} disabled={loading}>
-				{loading ? 'Generating...' : 'Generate Report'}
-			</Button>
+		<Container p={6}>
+			<VStack mb={'10'}>
+				<Heading mb={4}>Generate War Report</Heading>
+				<SelectRoot
+					collection={warIds}
+					value={warId}
+					onValueChange={(e) => setWarId(e.value)}
+				>
+					<SelectLabel>Select War</SelectLabel>
+					<SelectTrigger>
+						<SelectValueText placeholder="Select War ID" />
+					</SelectTrigger>
+					<SelectContent>
+						{warIds.items.map((movie) => (
+							<SelectItem item={movie} key={movie.value}>
+								{movie.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</SelectRoot>
+				<Button
+					onClick={handleGenerateReport}
+					loading={loading}
+					loadingText="Generating..."
+				>
+					Generate Report
+				</Button>
+			</VStack>
 			{generatedReport && (
-				<>
-					<div
-						className={classNames(styles.header, {
+				<VStack alignItems={'unset'}>
+					<Box
+						borderRadius={'10px'}
+						background={
+							generatedReport.outcome == 'VICTORY!'
+								? 'green.solid'
+								: 'red.solid'
+						}
+						padding={'10px'}
+						shadow="md"
+					>
+						{/* className={classNames(styles.header, {
 							[styles.win]: generatedReport.outcome === 'VICTORY!',
 							[styles.loss]: generatedReport.outcome === 'DEFEAT!',
-						})}
-					>
-						<h2>
+						})} */}
+						<Heading textAlign={'center'} size={'2xl'}>
 							{generatedReport.factionName}: {generatedReport.factionScore} vs{' '}
 							{generatedReport.opponentFactionName}:{' '}
 							{generatedReport.opponentFactionScore}
-						</h2>
-					</div>
-					<div className={styles.container}>
+						</Heading>
+					</Box>
+					<Grid templateColumns="repeat(2, 1fr)" gap="6">
+						{/* className={styles.container} */}
 						<table>
 							<tbody>
 								<tr>
@@ -178,7 +185,8 @@ export default function GenerateWarReport() {
 								<tr>
 									<td>Faction Takeaway</td>
 									<td>
-										<div className={styles.double}>
+										<div>
+											{/* className={styles.double} */}
 											<p>20%</p>
 											<p>{formatter.format(generatedReport.factionTakeaway)}</p>
 										</div>
@@ -285,121 +293,142 @@ export default function GenerateWarReport() {
 								</tr>
 							</tbody>
 						</table>
-						<div style={{ gap: '20px' }}>
-							<div className={styles.container2}>
-								<div className={styles.box}>
-									<h3>Respect</h3>
-									<p>
-										{
-											generatedReport.rewards.find((r) => r.type === 'Respect')
-												?.quantity
-										}
-									</p>
-								</div>
-								<div className={styles.box}>
-									<h3>Points</h3>
-									<p>
-										{
-											generatedReport.rewards.find((r) => r.type === 'Points')
-												?.quantity
-										}
-									</p>
-								</div>
-								<div className={styles.box}>
-									<h3>Payout per Weighted Score Point</h3>
-									<p>{formatter.format(generatedReport.payoutPerPoint)}</p>
-								</div>
-							</div>
-							<div className={styles.container2}>
-								<div className={styles.box}>
-									<h3>Total War Hits</h3>
-									<p>{generatedReport.totalWarHits}</p>
-								</div>
-								<div className={styles.box}>
-									<h3>Total Non-War Hits</h3>
-									<p>{generatedReport.totalNonWarHits}</p>
-								</div>
-								<div className={styles.box}>
-									<h3>Rewards</h3>
+						<Grid templateColumns="repeat(3, 1fr)" gap="6">
+							{/* className={styles.container2} */}
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Respect</Card.Header>
+								<Card.Body>
+									{
+										generatedReport.rewards.find((r) => r.type === 'Respect')
+											?.quantity
+									}
+								</Card.Body>
+							</Card.Root>
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Points</Card.Header>
+								<Card.Body>
+									{
+										generatedReport.rewards.find((r) => r.type === 'Points')
+											?.quantity
+									}
+								</Card.Body>
+							</Card.Root>
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Payout per Weighted Score Point</Card.Header>
+								<Card.Body>
+									{formatter.format(generatedReport.payoutPerPoint)}
+								</Card.Body>
+							</Card.Root>
+							{/* className={styles.container2} */}
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Total War Hits</Card.Header>
+								<Card.Body>{generatedReport.totalWarHits}</Card.Body>
+							</Card.Root>
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Total Non-War Hits</Card.Header>
+								<Card.Body>{generatedReport.totalNonWarHits}</Card.Body>
+							</Card.Root>
+							<Card.Root>
+								{/* className={styles.box} */}
+								<Card.Header>Rewards</Card.Header>
+								<Card.Body>
 									{generatedReport.rewards
 										.filter((r) => r.type !== 'Respect' && r.type !== 'Points')
 										.map((reward, i) => (
-											<p key={i}>
+											<Text key={i}>
 												{reward.quantity} {reward.type}
-											</p>
+											</Text>
 										))}
-								</div>
-							</div>
-						</div>
-					</div>
-					<Button onClick={handleUpdatePayout} disabled={loading}>
+								</Card.Body>
+							</Card.Root>
+						</Grid>
+					</Grid>
+					<Button
+						variant={'subtle'}
+						onClick={handleUpdatePayout}
+						disabled={loading}
+					>
 						Update Payout
 					</Button>
 					<div>
 						{/* Table showcasing all the members from the users clan */}
-						<Table.Root variant={'outline'} striped>
-							<Table.Header>
-								<Table.Row>
-									<Table.ColumnHeader>Member</Table.ColumnHeader>
-									<Table.ColumnHeader>Total Payout</Table.ColumnHeader>
-									<Table.ColumnHeader>Weighted Score</Table.ColumnHeader>
-									<Table.ColumnHeader>Warlord</Table.ColumnHeader>
-									<Table.ColumnHeader>War Hits</Table.ColumnHeader>
-									<Table.ColumnHeader>Non-War Hits</Table.ColumnHeader>
-									<Table.ColumnHeader>Respect</Table.ColumnHeader>
-									<Table.ColumnHeader>Chain Bonus</Table.ColumnHeader>
-									<Table.ColumnHeader>Total Score</Table.ColumnHeader>
-									<Table.ColumnHeader>Fair Fight Average</Table.ColumnHeader>
-								</Table.Row>
-							</Table.Header>
-							<Table.Body>
-								{generatedReport.members
-									.sort((a, b) => {
-										if (b.totalPayout === a.totalPayout) {
-											return b.respect - a.respect;
-										}
-										return b.totalPayout - a.totalPayout;
-									})
-									.map((member, i: number) => (
-										<Table.Row key={i}>
-											<Table.Cell>
-												{member.name} [{member.id}]
-											</Table.Cell>
-											<Table.Cell>
-												{formatter.format(member.totalPayout)}
-											</Table.Cell>
-											<Table.Cell>{member.weightedScore.toFixed(2)}</Table.Cell>
-											<Table.Cell>{member.warlord}</Table.Cell>
-											<Table.Cell>{member.warHits}</Table.Cell>
-											<Table.Cell>{member.nonWarHits}</Table.Cell>
-											<Table.Cell>{member.respect}</Table.Cell>
-											<Table.Cell>{member.chainBonus}</Table.Cell>
-											<Table.Cell>{member.totalScore}</Table.Cell>
-											<Table.Cell>
-												{member.fairFightAverage.toFixed(2)}
-											</Table.Cell>
-										</Table.Row>
-									))}
-								<Table.Row>
-									<Table.Cell>Total</Table.Cell>
-									<Table.Cell>
-										{formatter.format(generatedReport.totalPayout)}
-									</Table.Cell>
-									<Table.Cell>
-										{generatedReport.totalWeightedScore.toFixed(2)}
-									</Table.Cell>
-									<Table.Cell>{generatedReport.totalWarlord}</Table.Cell>
-									<Table.Cell>{generatedReport.totalWarHits}</Table.Cell>
-									<Table.Cell>{generatedReport.totalNonWarHits}</Table.Cell>
-									<Table.Cell>
-										{generatedReport.totalRespect.toFixed(2)}
-									</Table.Cell>
-									<Table.Cell>{generatedReport.totalChainBonus}</Table.Cell>
-									<Table.Cell>{generatedReport.factionScore}</Table.Cell>
-									<Table.Cell></Table.Cell>
-								</Table.Row>
-							</Table.Body>
-						</Table.Root>
+						<Table.ScrollArea borderWidth="1px" rounded="md" height="500px">
+							<Table.Root
+								// variant={'outline'}
+								striped
+								stickyHeader
+								showColumnBorder
+							>
+								<Table.Header>
+									<Table.Row bg="bg.subtle">
+										<Table.ColumnHeader>Member</Table.ColumnHeader>
+										<Table.ColumnHeader>Total Payout</Table.ColumnHeader>
+										<Table.ColumnHeader>Weighted Score</Table.ColumnHeader>
+										<Table.ColumnHeader>Warlord</Table.ColumnHeader>
+										<Table.ColumnHeader>War Hits</Table.ColumnHeader>
+										<Table.ColumnHeader>Non-War Hits</Table.ColumnHeader>
+										<Table.ColumnHeader>Respect</Table.ColumnHeader>
+										<Table.ColumnHeader>Chain Bonus</Table.ColumnHeader>
+										<Table.ColumnHeader>Total Score</Table.ColumnHeader>
+										<Table.ColumnHeader>Fair Fight Average</Table.ColumnHeader>
+									</Table.Row>
+								</Table.Header>
+								<Table.Body>
+									{generatedReport.members
+										.sort((a, b) => {
+											if (b.totalPayout === a.totalPayout) {
+												return b.respect - a.respect;
+											}
+											return b.totalPayout - a.totalPayout;
+										})
+										.map((member, i: number) => (
+											<Table.Row key={i}>
+												<Table.Cell>
+													{member.name} [{member.id}]
+												</Table.Cell>
+												<Table.Cell>
+													{formatter.format(member.totalPayout)}
+												</Table.Cell>
+												<Table.Cell>
+													{member.weightedScore.toFixed(2)}
+												</Table.Cell>
+												<Table.Cell>{member.warlord}</Table.Cell>
+												<Table.Cell>{member.warHits}</Table.Cell>
+												<Table.Cell>{member.nonWarHits}</Table.Cell>
+												<Table.Cell>{member.respect}</Table.Cell>
+												<Table.Cell>{member.chainBonus}</Table.Cell>
+												<Table.Cell>{member.totalScore}</Table.Cell>
+												<Table.Cell>
+													{member.fairFightAverage.toFixed(2)}
+												</Table.Cell>
+											</Table.Row>
+										))}
+									<Table.Row bg="bg.subtle">
+										<Table.Cell>Total</Table.Cell>
+										<Table.Cell>
+											{formatter.format(generatedReport.totalPayout)}
+										</Table.Cell>
+										<Table.Cell>
+											{generatedReport.totalWeightedScore.toFixed(2)}
+										</Table.Cell>
+										<Table.Cell>{generatedReport.totalWarlord}</Table.Cell>
+										<Table.Cell>{generatedReport.totalWarHits}</Table.Cell>
+										<Table.Cell>{generatedReport.totalNonWarHits}</Table.Cell>
+										<Table.Cell>
+											{generatedReport.totalRespect.toFixed(2)}
+										</Table.Cell>
+										<Table.Cell>{generatedReport.totalChainBonus}</Table.Cell>
+										<Table.Cell>{generatedReport.factionScore}</Table.Cell>
+										<Table.Cell></Table.Cell>
+									</Table.Row>
+								</Table.Body>
+							</Table.Root>
+						</Table.ScrollArea>
 						{/* Showcase a single members hits */}
 						{/* <Table.Root variant={'outline'} striped mt="5">
 							<Table.Header>
@@ -442,8 +471,8 @@ export default function GenerateWarReport() {
 							</Table.Body>
 						</Table.Root> */}
 					</div>
-				</>
+				</VStack>
 			)}
-		</div>
+		</Container>
 	);
 }

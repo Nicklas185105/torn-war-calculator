@@ -5,7 +5,7 @@
 Generate types from supabase with the following:
 
 ```bash
-npx supabase gen types typescript --project-id <id> > database.types.ts
+npx supabase gen types typescript --project-id <id> > src/types/database.types.ts
 ```
 
 ## Localtunnel for Clerk

@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { TablesInsert } from '@/types/database.types';
-import { Box, Text, Heading } from '@chakra-ui/react';
+import { Text, Heading, Card } from '@chakra-ui/react';
 import { RedirectToSignIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 
@@ -95,7 +95,10 @@ export async function FactionInfo() {
 				return;
 			}
 		}
+
+		return factionInfo;
 	};
+
 	const fetchLeader: (
 		leaderId: string | null | undefined
 	) => Promise<TablesInsert<'user_profiles'>> = async (
@@ -119,20 +122,36 @@ export async function FactionInfo() {
 		}
 	};
 
-	const faction = await fetchFaction();
-	const leader = await fetchLeader(faction?.leader_id);
+	const faction = (await fetchFaction()) as TablesInsert<'factions'>;
+	const leader = (await fetchLeader(
+		faction?.leader_id
+	)) as TablesInsert<'user_profiles'>;
 
-	if (!faction && !leader) {
-		// return <Spinner />;
-		return <Text>No faction data found.</Text>;
-	}
+	const isDataFound = (faction: unknown, leader: unknown): boolean => {
+		if (faction === null && leader === null) {
+			return false;
+		}
+		return true;
+	};
+
+	// Usage
+	const dataFound = isDataFound(faction, leader);
 
 	return (
-		<Box borderWidth="1px" borderRadius="lg" p={4}>
-			<Heading size="md">Faction Information</Heading>
-			<Text>Name: {faction.name}</Text>
-			<Text>Faction ID: {faction.faction_id}</Text>
-			<Text>Leader: {leader ? leader.name : 'Not registered'}</Text>
-		</Box>
+		<Card.Root>
+			<Card.Header>
+				<Heading size="md">Faction Information</Heading>
+			</Card.Header>
+			<Card.Body color="fg.muted">
+				{!dataFound && <Text>No faction data found.</Text>}
+				{dataFound && (
+					<>
+						<Text>Name: {faction?.name}</Text>
+						<Text>Faction ID: {faction?.faction_id}</Text>
+						<Text>Leader: {leader ? leader.name : 'Not registered'}</Text>
+					</>
+				)}
+			</Card.Body>
+		</Card.Root>
 	);
 }

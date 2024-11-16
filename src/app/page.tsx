@@ -1,5 +1,5 @@
-import { Box, Heading, Flex } from '@chakra-ui/react';
-import { UserInfo, FactionInfo, WarUpdates } from '@/components';
+import { Heading, Flex, Container, Grid, Table } from '@chakra-ui/react';
+import { UserInfo, FactionInfo } from '@/components';
 import { RedirectToSignIn, SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@/lib/supabase/server';
@@ -10,36 +10,62 @@ export default async function Home() {
 
 	if (!userId) return <RedirectToSignIn />;
 
-	const test = async () => {
-		const supabase = await createClient();
+	const supabase = await createClient();
 
-		const { error } = await supabase!
-			.from('user_profiles')
-			.select('*')
-			.eq('clerk_id', userId)
-			.single();
-		if (error) {
-			redirect('/auth/finish');
-		}
-	};
+	const { data, error } = await supabase!
+		.from('user_profiles')
+		.select('*')
+		.eq('clerk_id', userId)
+		.single();
+	if (error) {
+		redirect('/auth/finish');
+	}
 
-	await test();
+	// get war_reports from supabase
+	const { data: warReports } = await supabase
+		.from('war_reports')
+		.select('*')
+		.eq('faction_id', data.faction_id);
 
 	return (
-		<Box p={6}>
+		<Container p={6}>
 			<Heading mb={4}>Dashboard</Heading>
-			<Flex direction="column" gap={6}>
-				<SignedIn>
-					{/* User Information */}
-					<UserInfo />
+			<SignedIn>
+				<Flex direction="column" gap={6}>
+					<Grid templateColumns="repeat(2, 1fr)" gap="6">
+						{/* User Information */}
+						<UserInfo />
 
-					{/* Faction Information */}
-					<FactionInfo />
-
-					{/* War Updates */}
-					<WarUpdates />
-				</SignedIn>
-			</Flex>
-		</Box>
+						{/* Faction Information */}
+						<FactionInfo />
+					</Grid>
+					{/* War Reports */}
+					<Heading size="md">War Reports</Heading>
+					{warReports && warReports.length === 0 && (
+						<Flex justify="center">No war reports found.</Flex>
+					)}
+					{warReports && warReports.length > 0 && (
+						<Table.Root>
+							<Table.Header>
+								<Table.Row>
+									<Table.Cell>War ID</Table.Cell>
+									<Table.Cell>Faction ID</Table.Cell>
+									{/* <Table.Cell>Report</Table.Cell> */}
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{warReports.map((report) => (
+									<Table.Row key={report.id}>
+										<Table.Cell>{report.war_id}</Table.Cell>
+										<Table.Cell>{report.faction_id}</Table.Cell>
+										{/* <Table.Cell>{report.report}</Table.Cell> */}
+									</Table.Row>
+								))}
+							</Table.Body>
+						</Table.Root>
+					)}
+				</Flex>
+			</SignedIn>
+		</Container>
 	);
 }

@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { TablesInsert } from '@/types/database.types';
-import { Box, Text, Heading, Spinner } from '@chakra-ui/react';
+import { Text, Heading, Spinner, Card } from '@chakra-ui/react';
 import { RedirectToSignIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 
@@ -42,11 +42,15 @@ export async function UserInfo() {
 	}
 
 	return (
-		<Box borderWidth="1px" borderRadius="lg" p={4}>
-			<Heading size="md">User Information</Heading>
-			<Text>Name: {user_profile?.name}</Text>
-			<Text>Torn User ID: {user_profile?.user_id}</Text>
-			<Text>Role: {user_profile?.role}</Text>
-		</Box>
+		<Card.Root>
+			<Card.Header>
+				<Heading size="md">User Information</Heading>
+			</Card.Header>
+			<Card.Body color="fg.muted">
+				<Text>Name: {user_profile?.name}</Text>
+				<Text>Torn User ID: {user_profile?.torn_user_id}</Text>
+				<Text>Role: {user_profile?.role}</Text>
+			</Card.Body>
+		</Card.Root>
 	);
 }
