@@ -1,17 +1,21 @@
 'use client';
 
 import React from 'react';
-import styles from './Footer.module.css';
+import { Box, Container, Text } from '@chakra-ui/react';
 
-const Footer: React.FC = () => (
-	<footer className={styles.footer}>
-		<p>&copy; 2024 Torn War Calculator. All rights reserved.</p>
-		{/* <nav className={styles.nav}>
-			<a href="/about">About</a>
-			<a href="/contact">Contact</a>
-			<a href="/privacy">Privacy Policy</a>
-		</nav> */}
-	</footer>
-);
-
-export default Footer;
+export function Footer() {
+	return (
+		<footer>
+			<Box bg="cyan.subtle" py="10px" textAlign={'center'}>
+				<Container>
+					<Text>&copy; 2024 Torn War Calculator. All rights reserved.</Text>
+					{/* <nav className={styles.nav}>
+					<a href="/about">About</a>
+					<a href="/contact">Contact</a>
+					<a href="/privacy">Privacy Policy</a>
+				</nav> */}
+				</Container>
+			</Box>
+		</footer>
+	);
+}

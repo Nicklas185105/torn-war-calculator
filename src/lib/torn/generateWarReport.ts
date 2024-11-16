@@ -1,7 +1,6 @@
-import { Reward, WarReport, WRMember } from '@ctypes/warReport';
 import TornClient from './client';
-import { Attack } from '@ctypes/attacks';
-import { Member } from '@ctypes/index';
+import type { Attack, Member } from '@ctypes/torn.types';
+import type { Reward, WarReport, WRMember } from '@ctypes/warReport';
 
 export const generateWarReport = async (
 	userId: string,
@@ -120,9 +119,6 @@ export const generateWarReport = async (
 						totalPayout: 0,
 						weightedScore: calculateWeightedScoreFormulaA(attacks, memberId),
 						warlord: calculateWarlord(attacks, memberId),
-						hits: attacks.filter(
-							(attack) => attack.attacker_id === parseInt(memberId, 10)
-						),
 						warHits: calculateHits(attacks, memberId, 1),
 						nonWarHits: calculateHits(attacks, memberId, 0),
 						respect: parseFloat(

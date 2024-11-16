@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// tornClient.ts
 
-import { ApiResponse } from '@ctypes/index';
-import { UserProfileResponse } from '@ctypes/profile';
+import type {
+	AttacksResponse,
+	RankedWarReportResponse,
+	RankedWarsResponse,
+	UserProfileResponse,
+} from '@ctypes/torn.types';
 import axios, { AxiosInstance } from 'axios';
 
 class TornClient {
@@ -50,12 +53,14 @@ class TornClient {
 		return this.makeRequest('user', userId);
 	}
 
-	public async getRankedWarReport(warId: string): Promise<ApiResponse> {
+	public async getRankedWarReport(
+		warId: string
+	): Promise<RankedWarReportResponse> {
 		const selections = 'rankedwarreport';
 		return this.makeRequest('torn', warId, { selections });
 	}
 
-	public async getWars(factionId: string): Promise<any> {
+	public async getWars(factionId: string): Promise<RankedWarsResponse> {
 		const selections = 'rankedwars';
 		return this.makeRequest('faction', factionId, { selections });
 	}
@@ -70,7 +75,7 @@ class TornClient {
 		factionId: string,
 		from: string,
 		to: string
-	): Promise<any> {
+	): Promise<AttacksResponse> {
 		const selections = 'attacks';
 		return this.makeRequest('faction', factionId, { selections, from, to });
 	}

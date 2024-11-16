@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation';
 
 export function NavBar() {
 	const { user } = useUser();
-	// const { colorMode, toggleColorMode } = useColorMode();
 
 	user?.getSessions().then((sessions) => {
 		console.log('Sessions:', sessions);
@@ -26,38 +25,37 @@ export function NavBar() {
 	const router = useRouter();
 
 	return (
-		<Box bg="teal.emphasized" px={4}>
-			<Container>
-				<Flex h={16} alignItems="center" justifyContent="space-between">
-					<Box>
-						<Link as={NextLink} href="/" fontWeight="bold">
-							Torn War Calculator
-						</Link>
-					</Box>
-					<Flex alignItems="center">
-						{/* <Button onClick={toggleColorMode} mr={4}>
-						{colorMode === 'light' ? 'Dark' : 'Light'}
-					</Button> */}
-						<Group>
-							<Button
-								onClick={() => router.push('/war-reports')}
-								variant={'ghost'}
-							>
-								War Report
-							</Button>
-							<ColorModeButton />
-							<SignedOut>
-								<LinkButton href="/auth">Sign In</LinkButton>
-								<SignInButton />
-								<RedirectToSignIn />
-							</SignedOut>
-							<SignedIn>
-								<UserButton />
-							</SignedIn>
-						</Group>
+		<header>
+			<Box bg="teal.emphasized" px={4}>
+				<Container>
+					<Flex h={16} alignItems="center" justifyContent="space-between">
+						<Box>
+							<Link as={NextLink} href="/" fontWeight="bold">
+								Torn War Calculator
+							</Link>
+						</Box>
+						<Flex alignItems="center">
+							<Group>
+								<Button
+									onClick={() => router.push('/war-reports')}
+									variant={'ghost'}
+								>
+									War Report
+								</Button>
+								<ColorModeButton />
+								<SignedOut>
+									<LinkButton href="/auth">Sign In</LinkButton>
+									<SignInButton />
+									<RedirectToSignIn />
+								</SignedOut>
+								<SignedIn>
+									<UserButton />
+								</SignedIn>
+							</Group>
+						</Flex>
 					</Flex>
-				</Flex>
-			</Container>
-		</Box>
+				</Container>
+			</Box>
+		</header>
 	);
 }

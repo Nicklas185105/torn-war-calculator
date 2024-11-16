@@ -1,10 +1,9 @@
-import { Heading, Flex, Container, Grid, Table } from '@chakra-ui/react';
+import { redirect } from 'next/navigation';
 import { RedirectToSignIn, SignedIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
+import { Heading, Flex, Container, Grid, Table } from '@chakra-ui/react';
+import { FactionInfo, UserInfo } from '@components/index';
 import { createClient } from '@lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { UserInfo } from '@components/UserInfo';
-import { FactionInfo } from '@components/FactionInfo';
 
 export default async function Home() {
 	const { userId } = await auth();

@@ -1,8 +1,8 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@lib/supabase/server';
 import type { TablesInsert } from '@ctypes/database.types';
+import { createClient } from '@lib/supabase/server';
 import TornClient from '@lib/torn/client';
 import { generateWarReport } from '@lib/torn/generateWarReport';
 

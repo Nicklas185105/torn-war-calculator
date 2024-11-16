@@ -1,9 +1,8 @@
 'use client';
 
-import { Button } from '@ui/button';
-import { Checkbox } from '@ui/checkbox';
-import { Field } from '@ui/field';
-import { PasswordInput } from '@ui/password-input';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useSignUp } from '@clerk/nextjs';
 import {
 	Box,
 	Container,
@@ -15,9 +14,10 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { useSignUp } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Button } from '@ui/button';
+import { Checkbox } from '@ui/checkbox';
+import { Field } from '@ui/field';
+import { PasswordInput } from '@ui/password-input';
 // import { SignIn } from '@clerk/nextjs';
 
 export default function SignInPage() {

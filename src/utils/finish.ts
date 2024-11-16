@@ -1,5 +1,3 @@
-// app/auth/finish/actions.ts
-
 'use server';
 
 import { auth } from '@clerk/nextjs/server';

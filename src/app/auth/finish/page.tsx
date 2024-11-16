@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
 	Box,
 	Center,
@@ -10,11 +12,9 @@ import {
 	Spinner,
 	Stack,
 } from '@chakra-ui/react';
-import { handleSubmit } from './actions';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Button } from '@ui/button';
 import { Field } from '@ui/field';
+import { handleSubmit } from '@utils/finish';
 
 export default function FinishPage() {
 	const router = useRouter();

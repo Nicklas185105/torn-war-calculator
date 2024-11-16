@@ -1,4 +1,4 @@
-import { Attack } from './attacks';
+// Generated War Report Types
 
 export interface WarReport {
 	factionName: string;
@@ -51,7 +51,6 @@ export interface WRMember {
 	totalPayout: number;
 	weightedScore: number;
 	warlord: number;
-	hits: Attack[];
 	warHits: number;
 	nonWarHits: number;
 	respect: number;

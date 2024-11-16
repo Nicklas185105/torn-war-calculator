@@ -1,21 +1,23 @@
-export interface WarsApiResponse {
-	rankedwars: Record<number, RankedWar>;
-}
+// // Wars api torn
 
-export interface War {
-	start: number;
-	end: number;
-	target: number;
-	winner: number;
-}
+// export interface RankedWarsResponse {
+// 	rankedwars: Record<number, RankedWar>;
+// }
 
-export interface Faction {
-	name: string;
-	score: number;
-	chain: number;
-}
+// export interface War {
+// 	start: number;
+// 	end: number;
+// 	target: number;
+// 	winner: number;
+// }
 
-export interface RankedWar {
-	factions: Record<number, Faction>;
-	war: War;
-}
+// export interface Faction {
+// 	name: string;
+// 	score: number;
+// 	chain: number;
+// }
+
+// export interface RankedWar {
+// 	factions: Record<number, Faction>;
+// 	war: War;
+// }
