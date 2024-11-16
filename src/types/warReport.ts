@@ -6,6 +6,7 @@ export interface GeneratedResponse {
 }
 
 export interface WarReport {
+	newRank: string;
 	factionName: string;
 	factionScore: number;
 	opponentFactionName: string;

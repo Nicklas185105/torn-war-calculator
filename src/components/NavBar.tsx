@@ -8,7 +8,6 @@ import {
 	SignedOut,
 	SignInButton,
 	UserButton,
-	useUser,
 } from '@clerk/nextjs';
 import { LinkButton } from '@ui/link-button';
 import { Button } from '@ui/button';
@@ -16,12 +15,6 @@ import { ColorModeButton } from '@ui/color-mode';
 import { useRouter } from 'next/navigation';
 
 export function NavBar() {
-	const { user } = useUser();
-
-	user?.getSessions().then((sessions) => {
-		console.log('Sessions:', sessions);
-	});
-
 	const router = useRouter();
 
 	return (

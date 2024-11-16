@@ -81,6 +81,7 @@ export const generateWarReport = async (
 
 		// Aggregate all the data into your war report structure
 		const warReport: WarReport = {
+			newRank: report.rankedwarreport.factions[ownFactionId].rank_after,
 			factionName: factions[ownFactionId].name,
 			factionScore: factions[ownFactionId].score,
 			opponentFactionName: factions[opponentFactionId].name,

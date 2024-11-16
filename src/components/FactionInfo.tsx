@@ -26,9 +26,6 @@ export async function FactionInfo() {
 			.eq('clerk_id', userId)
 			.single();
 
-		console.log('[FactionInfo] profile:', profile);
-		console.log('[FactionInfo] userId:', userId);
-
 		if (profileError || !profile?.faction_id) {
 			console.error(
 				'Error fetching user profile or no faction ID:',

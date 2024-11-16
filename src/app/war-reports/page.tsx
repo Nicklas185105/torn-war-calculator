@@ -25,6 +25,7 @@ import {
 import { Button } from '@ui/button';
 import { WarReport } from '@ctypes/warReport';
 import { generateReport, getWarIds, saveReport } from '@utils/war-reports';
+import { toaster } from '@ui/toaster';
 
 export default function GenerateWarReport() {
 	const [warId, setWarId] = useState<string[]>([]);
@@ -70,7 +71,19 @@ export default function GenerateWarReport() {
 		setLoading(true);
 		try {
 			console.log('warId:', warId);
-			const { factionId, report } = await generateReport(parseInt(warId[0]));
+			const promise = generateReport(parseInt(warId[0]));
+			toaster.promise(promise, {
+				success: {
+					title: 'Successfully generated!',
+					description: 'Looks great',
+				},
+				error: {
+					title: 'Generation failed',
+					description: 'Something wrong with the generation',
+				},
+				loading: { title: 'Generating...', description: 'Please wait' },
+			});
+			const { factionId, report } = await promise;
 			setGeneratedReport(report);
 			setFactionId(factionId);
 		} catch (Error: unknown) {
@@ -107,6 +120,11 @@ export default function GenerateWarReport() {
 			0
 		);
 
+		toaster.create({
+			title: 'Payout Updated',
+			description: 'Payouts has been updated',
+			type: 'success',
+		});
 		setGeneratedReport({ ...generatedReport });
 		setLoading(false);
 	};
@@ -115,8 +133,17 @@ export default function GenerateWarReport() {
 		if (!generatedReport) return;
 		setLoading(true);
 
-		saveReport(warId[0], factionId!, generatedReport).then(() => {
-			console.log('Report saved');
+		const promise = saveReport(warId[0], factionId!, generatedReport);
+		toaster.promise(promise, {
+			success: {
+				title: 'Successfully saved!',
+				description: 'Looks great',
+			},
+			error: {
+				title: 'Saving failed',
+				description: 'Something wrong with the saving',
+			},
+			loading: { title: 'Saving...', description: 'Please wait' },
 		});
 
 		setLoading(false);
